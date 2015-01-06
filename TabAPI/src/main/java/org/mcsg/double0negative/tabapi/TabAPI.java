@@ -113,9 +113,9 @@ public class TabAPI extends JavaPlugin implements Listener, CommandExecutor{
 				switch (event.getPacketID()) {
 				case Packets.Server.PLAYER_INFO:
 					PacketContainer p = event.getPacket();
-					String s = p.getStrings().read(0);
-					if(s.startsWith("$")){  // this is a packet sent by TabAPI **Work around until I figure out how to make my own
-						p.getStrings().write(0,s.substring(1));  // packets bypass this block**
+					if(p != null && p.getStrings().size() > 0 && p.getStrings().read(0).startsWith("$")){  // this is a packet sent by TabAPI **Work around until I figure out how to make my own packets bypass this block**
+						String s = p.getStrings().read(0);
+						p.getStrings().write(0,s.substring(1));
 						event.setPacket(p);
 					}
 					else{
@@ -198,7 +198,6 @@ public class TabAPI extends JavaPlugin implements Listener, CommandExecutor{
 		}
 		
 		taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(TabAPI.plugin, new Runnable() {
-			@Override
 			public void run() {
 				if (p.isOnline()) {
 					
