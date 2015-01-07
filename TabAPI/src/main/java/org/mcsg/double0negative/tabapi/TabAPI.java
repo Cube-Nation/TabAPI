@@ -29,6 +29,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
 
 
 /**
@@ -113,7 +114,7 @@ public class TabAPI extends JavaPlugin implements Listener, CommandExecutor{
 				switch (event.getPacketID()) {
 				case Packets.Server.PLAYER_INFO:
 					PacketContainer p = event.getPacket();
-					if(p != null && p.getStrings().size() > 0 && p.getStrings().read(0).startsWith("$")){  // this is a packet sent by TabAPI **Work around until I figure out how to make my own packets bypass this block**
+					if(isTabApiPacket(p)) {
 						String s = p.getStrings().read(0);
 						p.getStrings().write(0,s.substring(1));
 						event.setPacket(p);
@@ -127,6 +128,16 @@ public class TabAPI extends JavaPlugin implements Listener, CommandExecutor{
 		});
 
 	}
+	
+    private static boolean isTabApiPacket(PacketContainer p) {
+        if (p == null) {
+            return false;
+        }
+        StructureModifier<String> structs = p.getStrings();
+
+        // this is a packet sent by TabAPI **Work around until I figure out how to make my own packets bypass this block**
+        return structs.size() > 0 && structs.read(0).startsWith("$");
+    }
 	
 	public void reloadConfiguration() {
 		reloadConfig();
